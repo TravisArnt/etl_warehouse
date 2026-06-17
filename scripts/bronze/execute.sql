@@ -1,5 +1,2 @@
-USE DataWarehouse;
-GO
-
-SELECT COUNT(*)
-FROM bronze.crm_cust_info;
+SELECT TOP(1000) *
+FROM bronze.crm_prd_info
