@@ -2,6 +2,7 @@ CREATE OR ALTER PROCEDURE silver.load_silver AS
 BEGIN
     DECLARE @start_time DATETIME, @end_time DATETIME
     BEGIN TRY
+    SET @start_time = GETDATE();   -- add this line
     PRINT('====================================');
     PRINT('Executing the Silver Procedure');
     PRINT('====================================');
@@ -77,7 +78,7 @@ BEGIN
 
 
     PRINT('>>Truncating crm_sales_details table')
-    TRUNCATE TABLE silver.crm_cust_info
+    TRUNCATE TABLE silver.crm_sales_details
     PRINT('>>Inserting data into crm_sales_details table')
     INSERT INTO silver.crm_sales_details(
         sls_ord_num,
