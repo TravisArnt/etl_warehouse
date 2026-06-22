@@ -84,10 +84,13 @@ scripts/
 │   └── proc_load_bronze.sql     # bulk-loads CSVs into bronze
 ├── silver/
 │   ├── ddl_silver.sql           # cleaned table definitions
-│   ├── proc_load_silver.sql     # transform + load bronze → silver
-│   └── silver_testing.sql       # data quality checks
+│   └── proc_load_silver.sql     # transform + load bronze → silver
 ├── gold/
 │   └── ddl_gold.sql             # star schema views (dims + fact)
+├── tests/
+│   ├── test_bronze.sql          # row counts, empty-row checks
+│   ├── test_silver.sql          # dedup, standardization, business rule checks
+│   └── test_gold.sql            # join integrity, surrogate key uniqueness
 └── execute.sql                  # run the full pipeline
 source_crm/                      # raw CRM CSV extracts
 source_erp/                      # raw ERP CSV extracts
@@ -99,6 +102,14 @@ source_erp/                      # raw ERP CSV extracts
 2. Run `scripts/bronze/ddl_bronze.sql` then `scripts/bronze/proc_load_bronze.sql`, and execute `EXEC bronze.load_bronze;`.
 3. Run `scripts/silver/ddl_silver.sql` then `scripts/silver/proc_load_silver.sql`, and execute `EXEC silver.load_silver;`.
 4. Run `scripts/gold/ddl_gold.sql` to create the reporting views.
+
+## Data Quality Checks
+
+Each layer has a corresponding test script in `scripts/tests/` — run it after loading that layer to catch issues early (broken loads, failed dedup, bad joins):
+
+- `test_bronze.sql` — raw data arrived intact (non-zero row counts, no fully empty rows).
+- `test_silver.sql` — transformations worked correctly (no duplicate customer IDs, no NULLs in critical fields, standardized gender/marital status values, no negative costs).
+- `test_gold.sql` — joins didn't drop or duplicate data (no orphaned dimension keys in the fact view, unique surrogate keys, fact row count consistent with silver).
 
 ## Tech Stack
 
